@@ -5,8 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	img "github.com/asaft29/govertor/internal/ascii"
-	"github.com/asaft29/govertor/internal/utils"
+	ascii "github.com/asaft29/govertor/internal"
 )
 
 func main() {
@@ -26,12 +25,12 @@ func main() {
 		log.Fatalf("Invalid height: %s", os.Args[3])
 	}
 
-	if utils.CheckFile(filePath) {
-		grayscale, err := img.PrepareImage(filePath, width, height)
+	if ascii.CheckFile(filePath) {
+		grayscale, err := ascii.PrepareImage(filePath, width, height)
 		if err != nil {
 			log.Fatalf("ERROR : %s", err)
 		}
-		img.PrintImageToASCII(*grayscale)
+		ascii.PrintImageToASCII(*grayscale)
 	} else {
 		log.Fatalf("File does not exist or is not accessible: %s", filePath)
 	}

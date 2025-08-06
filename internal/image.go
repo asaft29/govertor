@@ -1,14 +1,37 @@
-package img
+package ascii
 
 import (
 	"fmt"
-	"golang.org/x/image/draw"
 	"image"
 	"image/color"
 	_ "image/jpeg"
 	_ "image/png"
 	"os"
+
+	"golang.org/x/image/draw"
 )
+
+var imageExts = map[string]bool{
+	".jpg": true, ".jpeg": true, ".png": true, ".gif": true,
+}
+
+type ImageCreator struct {
+	input *string
+	w     *uint
+	h     *uint
+}
+
+func (img ImageCreator) GetInput() *string {
+	return img.input
+}
+
+func (img ImageCreator) GetWidth() *uint {
+	return img.w
+}
+
+func (img ImageCreator) GetHeight() *uint {
+	return img.h
+}
 
 const asciiChars = "@%#*+=-:."
 
