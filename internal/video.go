@@ -1,23 +1,24 @@
 package ascii
 
+import "image"
+
 var videoExts = map[string]bool{
-	".mp4": true, ".mov": true, ".avi": true, ".mkv": true, ".wmv": true,
+	".mp4": true, ".avi": true, ".mov": true,
 }
 
 type VideoCreator struct {
 	input *string
-	w     *uint
-	h     *uint
 }
 
-func (img VideoCreator) GetInput() *string {
-	return img.input
+func (vid VideoCreator) GetInput() *string {
+	return vid.input
 }
 
-func (img VideoCreator) GetWidth() *uint {
-	return img.w
+func (vid VideoCreator) Prepare(filePath string, w, h int) (image.Image, error) {
+
+	return nil, nil
 }
 
-func (img VideoCreator) GetHeight() *uint {
-	return img.h
+func (vid VideoCreator) PrintToASCII(img image.Image) {
+
 }

@@ -1,3 +1,4 @@
+// ascii/image_creator.go
 package ascii
 
 import (
@@ -11,53 +12,37 @@ import (
 	"golang.org/x/image/draw"
 )
 
+const asciiChars = "@%#*+=-:."
+
 var imageExts = map[string]bool{
 	".jpg": true, ".jpeg": true, ".png": true, ".gif": true,
 }
 
 type ImageCreator struct {
 	input *string
-	w     *uint
-	h     *uint
 }
 
-func (img ImageCreator) GetInput() *string {
-	return img.input
-}
+func (ic *ImageCreator) GetInput() *string { return ic.input }
 
-func (img ImageCreator) GetWidth() *uint {
-	return img.w
-}
-
-func (img ImageCreator) GetHeight() *uint {
-	return img.h
-}
-
-const asciiChars = "@%#*+=-:."
-
-func PrepareImage(filePath string, targetWidth, targetHeight int) (*image.Gray, error) {
-
+func (ic *ImageCreator) Prepare(filePath string, targetWidth, targetHeight int) (image.Image, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR : Opening the file : %s", err)
+		return nil, fmt.Errorf("failed to open image file: %w", err)
 	}
+	defer file.Close()
 
-	img, _, err := image.Decode(file)
-
+	src, _, err := image.Decode(file)
 	if err != nil {
-		return nil, fmt.Errorf("ERROR : Decoding : %s", err)
+		return nil, fmt.Errorf("failed to decode image: %w", err)
 	}
 
 	dst := image.NewRGBA(image.Rect(0, 0, targetWidth, targetHeight))
-	draw.ApproxBiLinear.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
+	draw.ApproxBiLinear.Scale(dst, dst.Bounds(), src, src.Bounds(), draw.Over, nil)
 
-	gray := toGrayscale(dst)
-
-	return gray, nil
+	return toGrayscale(dst), nil
 }
 
 func toGrayscale(img image.Image) *image.Gray {
-
 	bounds := img.Bounds()
 	grayImg := image.NewGray(bounds)
 
@@ -65,28 +50,25 @@ func toGrayscale(img image.Image) *image.Gray {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			c := img.At(x, y)
 			r, g, b, _ := c.RGBA()
-			r8 := uint8(r >> 8)
-			g8 := uint8(g >> 8)
-			b8 := uint8(b >> 8)
-
-			gray := uint8(0.299*float64(r8) + 0.587*float64(g8) + 0.114*float64(b8))
-
+			gray := uint8(0.299*float64(r>>8) + 0.587*float64(g>>8) + 0.114*float64(b>>8))
 			grayImg.SetGray(x, y, color.Gray{Y: gray})
 		}
 	}
 	return grayImg
 }
 
-func PrintImageToASCII(img image.Gray) {
-	for y := 0; y < img.Bounds().Dy(); y++ {
+func (ic *ImageCreator) PrintToASCII(img image.Image) {
+	bounds := img.Bounds()
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		var line string
-		for x := 0; x < img.Bounds().Dx(); x++ {
-			gray := img.GrayAt(x, y).Y
-			index := int(float64(gray) / 256.0 * float64(len(asciiChars)))
-			char := asciiChars[index]
-			line += string(char)
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			gray := color.GrayModel.Convert(img.At(x, y)).(color.Gray).Y
+			idx := int(float64(gray) / 256 * float64(len(asciiChars)))
+			if idx >= len(asciiChars) {
+				idx = len(asciiChars) - 1
+			}
+			line += string(asciiChars[idx])
 		}
 		fmt.Println(line)
 	}
-
 }
