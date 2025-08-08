@@ -1,4 +1,3 @@
-// ascii/image_creator.go
 package ascii
 
 import (
@@ -12,10 +11,8 @@ import (
 	"golang.org/x/image/draw"
 )
 
-const asciiChars = "@%#*+=-:."
-
 var imageExts = map[string]bool{
-	".jpg": true, ".jpeg": true, ".png": true, ".gif": true,
+	".jpg": true, ".jpeg": true, ".png": true,
 }
 
 type ImageCreator struct {
@@ -41,6 +38,8 @@ func (ic *ImageCreator) Prepare(filePath string, targetWidth, targetHeight int) 
 
 	return toGrayscale(dst), nil
 }
+
+func (ic *ImageCreator) IsVideo() bool { return false }
 
 func toGrayscale(img image.Image) *image.Gray {
 	bounds := img.Bounds()

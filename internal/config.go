@@ -7,10 +7,13 @@ import (
 	"path/filepath"
 )
 
+const asciiChars = ".%#*+=-:^"
+
 type Config interface {
 	GetInput() *string
 	Prepare(filePath string, w, h int) (image.Image, error)
 	PrintToASCII(img image.Image)
+	IsVideo() bool
 }
 
 func CreateConfig() (Config, error) {
