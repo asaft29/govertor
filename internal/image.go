@@ -6,7 +6,6 @@ import (
 	"image/color"
 	_ "image/jpeg"
 	"image/png"
-	_ "image/png"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,10 +16,11 @@ import (
 	"golang.org/x/image/math/fixed"
 )
 
-const savedDir = "saved"
+const savedDirImgs = "converted/images"
 
 var imageExts = map[string]bool{
 	".jpg": true, ".jpeg": true, ".png": true,
+	".bmp": true, ".webp": true, ".ico": true,
 }
 
 type ImageCreator struct {
@@ -100,13 +100,10 @@ func (ic *ImageCreator) PrintToASCII(img image.Image) error {
 
 func (ic *ImageCreator) saveAsPNG(asciiLines []string) error {
 
-	err := os.MkdirAll(savedDir, 0755)
+	err := os.MkdirAll(savedDirImgs, 0755)
 	if err != nil {
 		return fmt.Errorf("failed to create saved directory: %w", err)
 	}
-
-	charWidth := 7
-	charHeight := 13
 
 	imgWidth := len(asciiLines[0]) * charWidth
 	imgHeight := len(asciiLines) * charHeight
@@ -131,7 +128,7 @@ func (ic *ImageCreator) saveAsPNG(asciiLines []string) error {
 	}
 
 	baseName := strings.TrimSuffix(filepath.Base(*ic.input), filepath.Ext(*ic.input))
-	outputPath := filepath.Join(savedDir, baseName+"_ascii.png")
+	outputPath := filepath.Join(savedDirImgs, baseName+"_ascii.png")
 
 	file, err := os.Create(outputPath)
 	if err != nil {

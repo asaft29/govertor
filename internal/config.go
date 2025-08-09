@@ -1,3 +1,5 @@
+// Package ascii provides utilities for converting images and videos
+// into ASCII art representations, including saving ASCII frames as GIFs.
 package ascii
 
 import (
@@ -8,6 +10,8 @@ import (
 )
 
 const asciiChars = ".%#*+=-:^"
+const charWidth = 7
+const charHeight = 13
 
 type Config interface {
 	GetInput() *string
