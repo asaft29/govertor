@@ -41,7 +41,10 @@ func main() {
 					log.Printf("ERROR : %v", err)
 					return
 				}
-				conf.PrintToASCII(img)
+				err = conf.PrintToASCII(img)
+				if err != nil {
+					log.Fatalf("ERROR : %v", err)
+				}
 			}
 		}()
 

@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -25,11 +26,14 @@ type VideoCreator struct {
 	height   int
 	frameBuf []byte
 	closed   bool
+	save     bool
 }
 
 func (vid *VideoCreator) GetInput() *string {
 	return vid.input
 }
+
+func (vid *VideoCreator) GetExtension() string { return filepath.Ext(*vid.input) }
 
 func (vid *VideoCreator) IsVideo() bool { return true }
 
@@ -86,7 +90,7 @@ func (vid *VideoCreator) Prepare(filePath string, targetWidth, targetHeight int)
 	return img, nil
 }
 
-func (vid *VideoCreator) PrintToASCII(img image.Image) {
+func (vid *VideoCreator) PrintToASCII(img image.Image) error {
 
 	bounds := img.Bounds()
 	var b strings.Builder
@@ -114,4 +118,6 @@ func (vid *VideoCreator) PrintToASCII(img image.Image) {
 
 	os.Stdout.Sync()
 	time.Sleep(time.Millisecond * 50)
+
+	return nil
 }
