@@ -112,13 +112,13 @@ func (ic *ImageCreator) saveAsPNG(asciiLines []string) error {
 
 	for y := range imgHeight {
 		for x := range imgWidth {
-			img.Set(x, y, color.RGBA{255, 255, 255, 255})
+			img.Set(x, y, color.RGBA{0, 0, 0, 255})
 		}
 	}
 
 	d := &font.Drawer{
 		Dst:  img,
-		Src:  image.NewUniform(color.RGBA{0, 0, 0, 255}),
+		Src:  image.NewUniform(color.RGBA{255, 255, 255, 255}),
 		Face: basicfont.Face7x13,
 	}
 

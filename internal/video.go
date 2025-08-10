@@ -35,8 +35,8 @@ type VideoCreator struct {
 	height      int
 	frameBuf    []byte
 	closed      bool
-	save        bool
 	asciiFrames []string
+	ConfFlags   Flags
 }
 
 func (vid *VideoCreator) GetInput() *string {
@@ -123,19 +123,17 @@ func (vid *VideoCreator) PrintToASCII(img image.Image) error {
 	fmt.Print("\033[3J")
 	fmt.Print(asciiFrame)
 	os.Stdout.Sync()
+	maxFrames := vid.ConfFlags.Frames
 
-	if vid.save && len(vid.asciiFrames) < 50 {
+	if *vid.ConfFlags.Save && len(vid.asciiFrames) < *maxFrames {
 		vid.asciiFrames = append(vid.asciiFrames, asciiFrame)
 	}
 
-	time.Sleep(time.Millisecond * 50)
+	time.Sleep(30 * time.Millisecond)
 	return nil
 }
 
 func (vid *VideoCreator) SaveGIF() error {
-	if len(vid.asciiFrames) == 0 {
-		return fmt.Errorf("no frames to save")
-	}
 
 	var images []*image.Paletted
 	var delays []int
@@ -173,8 +171,6 @@ func (vid *VideoCreator) textToImage(text string) *image.Paletted {
 	}
 
 	face := basicfont.Face7x13
-	charWidth := 7
-	charHeight := 13
 
 	maxWidth := 0
 	for _, line := range lines {
@@ -187,8 +183,8 @@ func (vid *VideoCreator) textToImage(text string) *image.Paletted {
 	height := charHeight * len(lines)
 
 	palette := color.Palette{
-		color.White,
 		color.Black,
+		color.White,
 	}
 
 	img := image.NewPaletted(image.Rect(0, 0, width, height), palette)

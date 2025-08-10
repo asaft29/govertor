@@ -50,10 +50,15 @@ func main() {
 
 		wg.Wait()
 
-		err := conf.(*ascii.VideoCreator).SaveGIF()
+		if v, ok := conf.(*ascii.VideoCreator); ok {
 
-		if err != nil {
-			log.Fatalf("Failed to save GIF: %v", err)
+			if *v.ConfFlags.Save {
+				err := v.SaveGIF()
+				if err != nil {
+					log.Fatalf("Failed to save GIF: %v", err)
+
+				}
+			}
 		}
 
 	} else {
