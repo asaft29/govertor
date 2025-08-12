@@ -56,7 +56,6 @@ func main() {
 				err := v.SaveGIF()
 				if err != nil {
 					log.Fatalf("Failed to save GIF: %v", err)
-
 				}
 			}
 		}

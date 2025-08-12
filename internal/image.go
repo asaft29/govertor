@@ -1,11 +1,13 @@
 package ascii
 
 import (
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
 	_ "image/jpeg"
 	"image/png"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,13 +27,12 @@ var imageExts = map[string]bool{
 
 type ImageCreator struct {
 	input     *string
-	save      bool
-	extension string
+	ConfFlags Flags
 }
 
-func (ic *ImageCreator) GetInput() *string { return ic.input }
-
-func (ic *ImageCreator) GetExtension() string { return filepath.Ext(*ic.input) }
+func (ic *ImageCreator) GetInput() *string {
+	return ic.input
+}
 
 func (ic *ImageCreator) Prepare(filePath string, targetWidth, targetHeight int) (image.Image, error) {
 	file, err := os.Open(filePath)
@@ -51,7 +52,9 @@ func (ic *ImageCreator) Prepare(filePath string, targetWidth, targetHeight int) 
 	return toGrayscale(dst), nil
 }
 
-func (ic *ImageCreator) IsVideo() bool { return false }
+func (ic *ImageCreator) IsVideo() bool {
+	return false
+}
 
 func toGrayscale(img image.Image) *image.Gray {
 	bounds := img.Bounds()
@@ -92,18 +95,17 @@ func (ic *ImageCreator) PrintToASCII(img image.Image) error {
 	asciiArt := asciiBuilder.String()
 	fmt.Print(asciiArt)
 
-	if ic.save {
-		return ic.saveAsPNG(asciiLines)
+	if *ic.ConfFlags.Save {
+		res := ic.saveAsPNG(asciiLines)
+		if res != nil {
+			log.Fatalf("Failed to save IMAGE: image will not be saved : %v", res)
+		}
+		return res
 	}
 	return nil
 }
 
 func (ic *ImageCreator) saveAsPNG(asciiLines []string) error {
-
-	err := os.MkdirAll(savedDirImgs, 0755)
-	if err != nil {
-		return fmt.Errorf("failed to create saved directory: %w", err)
-	}
 
 	imgWidth := len(asciiLines[0]) * charWidth
 	imgHeight := len(asciiLines) * charHeight
@@ -128,12 +130,32 @@ func (ic *ImageCreator) saveAsPNG(asciiLines []string) error {
 	}
 
 	baseName := strings.TrimSuffix(filepath.Base(*ic.input), filepath.Ext(*ic.input))
-	outputPath := filepath.Join(savedDirImgs, baseName+"_ascii.png")
+	var outputPath string
 
+	if ic.ConfFlags.Output == nil || *ic.ConfFlags.Output == "" {
+		outputPath = filepath.Join(savedDirImgs, baseName+"_ascii.png")
+	} else {
+		out := strings.TrimSpace(*ic.ConfFlags.Output)
+
+		if fi, err := os.Stat(out); err == nil {
+			if fi.IsDir() {
+				outputPath = filepath.Join(out, baseName+"_ascii.png")
+			} else {
+				outputPath = out
+			}
+		} else if errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("output path does not exist: %s", out)
+		} else {
+			return fmt.Errorf("error accessing output path: %v", err)
+		}
+	}
+
+	os.MkdirAll(savedDirImgs, 0755)
 	file, err := os.Create(outputPath)
 	if err != nil {
-		return fmt.Errorf("failed to create output file: %w", err)
+		return err
 	}
+
 	defer file.Close()
 
 	err = png.Encode(file, img)

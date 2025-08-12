@@ -2,6 +2,7 @@ package ascii
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
@@ -41,10 +42,6 @@ type VideoCreator struct {
 
 func (vid *VideoCreator) GetInput() *string {
 	return vid.input
-}
-
-func (vid *VideoCreator) GetExtension() string {
-	return filepath.Ext(*vid.input)
 }
 
 func (vid *VideoCreator) IsVideo() bool {
@@ -145,13 +142,32 @@ func (vid *VideoCreator) SaveGIF() error {
 	}
 
 	baseName := strings.TrimSuffix(filepath.Base(*vid.input), filepath.Ext(*vid.input))
-	outputPath := filepath.Join(savedDirVids, baseName+"_ascii.gif")
+	var outputPath string
+
+	if vid.ConfFlags.Output == nil || *vid.ConfFlags.Output == "" {
+		outputPath = filepath.Join(savedDirVids, baseName+"_ascii.gif")
+	} else {
+		out := strings.TrimSpace(*vid.ConfFlags.Output)
+
+		if fi, err := os.Stat(out); err == nil {
+			if fi.IsDir() {
+				outputPath = filepath.Join(out, baseName+"_ascii.gif")
+			} else {
+				outputPath = out
+			}
+		} else if errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("output path does not exist: %s", out)
+		} else {
+			return fmt.Errorf("error accessing output path: %v", err)
+		}
+	}
 
 	os.MkdirAll(savedDirVids, 0755)
 	file, err := os.Create(outputPath)
 	if err != nil {
 		return err
 	}
+
 	defer file.Close()
 
 	gifAnim := &gif.GIF{Image: images, Delay: delays}
