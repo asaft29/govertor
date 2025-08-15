@@ -1,6 +1,14 @@
 APP_NAME = govertor
 MAIN = cmd/govertor/main.go
 
+ifeq ($(OS),Windows_NT)
+    RM = del /Q /F
+    EXE = .exe
+else
+    RM = rm -f
+    EXE =
+endif
+
 .PHONY: help build clean
 
 help:
@@ -9,8 +17,7 @@ help:
 	@echo "  clean               Remove built binary"
 
 build:
-	go build -o $(APP_NAME) $(MAIN)
+	go build -o $(APP_NAME)$(EXE) $(MAIN)
 
 clean:
-	rm -f $(APP_NAME)
-
+	$(RM) $(APP_NAME)$(EXE)
