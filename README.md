@@ -136,6 +136,10 @@ Here are some examples of how govertor handles videos conversions, for further d
 -s    Flag for saving
 ```
 
+### ⚠️ IMPORTANT (Video Saving) ⚠️
+When converting **videos**, you **must press `q` to quit** playback in order for the output to be saved.  
+If you exit with **`Ctrl+C`**, the video **will not be saved**.
+
 ## Technical Details
 
 ### Supported Input Formats
