@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="converted/videos/box_ascii.gif" alt="Box">
+  <img src="converted/videos/golang_ascii.gif" alt="Box">
 </p>
 
 
@@ -75,7 +75,7 @@ Run `govertor` without installing Go or dependencies locally. Below is an exampl
 ```bash
 docker build -t govertor .
 
-docker run --rm -it govertor i assets/videos/cartman.gif -f 100
+docker run --rm -it govertor -i assets/videos/cartman.gif -f 100
 ```
 
 This captures the first 100 frames of the video and prints the ASCII conversion to the terminal.
@@ -93,8 +93,15 @@ This captures the first 100 frames of the video and prints the ASCII conversion 
 
 ### Video Conversions
 
-Here are some examples of how govertor handles videos conversions, for further details you can take a look at the [converted](converted/) folder
+<p align="center">
+  For further details you can take a look at the <a href="converted/">converted</a> folder
+</p>
 
+
+<p align="center">
+  <img src="converted/videos/box_ascii.gif" alt="Kratos Rage ASCII"><br>
+  <em>Rotating object, pretty cool :)</em>
+</p>
 
 <p align="center">
   <img src="converted/videos/doom_eternal_ascii.gif" alt="Doom Eternal ASCII"><br>
