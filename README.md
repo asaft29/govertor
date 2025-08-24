@@ -15,7 +15,7 @@
 - **Video to ASCII**: Transform videos into ASCII animations (GIF output)
 - **High Quality Output**: Maintains visual clarity while converting to text
 - **Multiple Format Support**: Works with various input formats
-- **Batch Processing**: Convert multiple files efficiently
+- **Batch Processing**: Convert multiple files efficiently ( NOT YET IMPLEMETED )
 
 ## Installation
 
