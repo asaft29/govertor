@@ -32,6 +32,8 @@ cd govertor
 
 make build
 ```
+> ⚠ **Disclaimer:** If you are **not using Docker**, [`ffmpeg`](https://www.ffmpeg.org/download.html) must be installed on your system for video conversion to work properly
+
 
 ## Usage
 
@@ -143,8 +145,8 @@ This captures the first 100 frames of the video and prints the ASCII conversion 
 -s    Flag for saving
 ```
 
-### ⚠️ IMPORTANT (Video Saving) ⚠️
-When converting **videos**, you **must press `q` to quit** playback in order for the output to be saved.  
+### ⚠ Video Saving ⚠
+> When converting **videos**, you **must press `q` to quit** playback in order for the output to be saved.  
 If you exit with **`Ctrl+C`**, the video **will not be saved**.
 
 ## Technical Details
