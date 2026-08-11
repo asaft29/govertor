@@ -4,7 +4,6 @@ package ascii
 
 import (
 	"errors"
-	"flag"
 	"image"
 	"path/filepath"
 )
@@ -29,14 +28,8 @@ type Flags struct {
 	Output *string
 }
 
-func CreateConfig() (ASCIIConvertor, error) {
-	input := flag.String("i", "", "Path to input file (image or video)")
-	save := flag.Bool("s", false, "Flag for saving")
-	frames := flag.Int("f", 50, "Frames for video")
-	output := flag.String("o", "", "Output of saved file")
-	flag.Parse()
-
-	if *input == "" {
+func CreateConfig(input string, save *bool, frames *int, output *string) (ASCIIConvertor, error) {
+	if input == "" {
 		return nil, errors.New("input file required")
 	}
 
@@ -44,15 +37,14 @@ func CreateConfig() (ASCIIConvertor, error) {
 		return nil, errors.New("max frames should be [0, 600]")
 	}
 
-	ext := filepath.Ext(*input)
-	flags := Flags{input, save, frames, output}
+	ext := filepath.Ext(input)
+	flags := Flags{Input: &input, Save: save, Frames: frames, Output: output}
 
 	switch {
 	case imageExts[ext]:
-		return &ImageCreator{input: input, ConfFlags: flags}, nil
+		return &ImageCreator{input: &input, ConfFlags: flags}, nil
 	case videoExts[ext]:
-
-		return &VideoCreator{input: input, ConfFlags: flags}, nil
+		return &VideoCreator{input: &input, ConfFlags: flags}, nil
 	default:
 		return nil, errors.New("unsupported file type: " + ext)
 	}
